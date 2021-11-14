@@ -1,6 +1,6 @@
 import copy
 
-from MMOR.utils.function import nd_func_to_1d_func
+from utils.function import nd_func_to_1d_func
 
 
 def numerical_derivative_1d(func, epsilon):
