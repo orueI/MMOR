@@ -3,11 +3,11 @@ import copy
 import numpy as np
 from scipy.spatial import distance
 
-method_of_steepest_descent_iter_list = []
-method_of_steepest_descent_iter_label = ['X', 'z']
+method_polak_ribiere_iter_list = []
+method_polak_ribiere_iter_label = ['X', 'z']
 
 
-def get_method_fletcher_reeves(optimization_algorithm):
+def get_method_polak_ribiere(optimization_algorithm):
     def norm(X):
         arr = np.array(X)
         norm = np.linalg.norm(arr)
@@ -26,7 +26,7 @@ def get_method_fletcher_reeves(optimization_algorithm):
 
             return [res_f, point]
 
-        method_of_steepest_descent_iter_list.clear()
+        method_polak_ribiere_iter_list.clear()
 
         def optimize_point(point, previous_point):
             grad = norm(np.array(f_derivative(point)) * -1)
@@ -37,21 +37,21 @@ def get_method_fletcher_reeves(optimization_algorithm):
             new_point = opt_f[1](new_point)
             euclidean = distance.euclidean(point, new_point)
 
-            beta = grad.transpose() * grad / (previous_grad.transpose() * previous_grad)
+            beta = grad.transpose() * (grad-previous_grad) / (previous_grad.transpose() * previous_grad)
             d = grad + beta * previous_grad
             return point + euclidean * norm(d)
 
         def optimize(point, previous_point, max_iteration):
             new_point = optimize_point(copy.deepcopy(point), copy.deepcopy(previous_point))
             euclidean = distance.euclidean(point, new_point)
-            method_of_steepest_descent_iter_list.append(copy.deepcopy([new_point, f(new_point), euclidean]))
+            method_polak_ribiere_iter_list.append(copy.deepcopy([new_point, f(new_point), euclidean]))
 
             if euclidean < eps or max_iteration < 0:
                 return new_point
             else:
                 return optimize(new_point, point, max_iteration - 1)
 
-        method_of_steepest_descent_iter_list.append(copy.deepcopy([start_point, f(start_point), 0]))
+        method_polak_ribiere_iter_list.append(copy.deepcopy([start_point, f(start_point), 0]))
 
         grad = norm(np.array(f_derivative(start_point)) * -1)
 
